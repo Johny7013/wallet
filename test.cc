@@ -1,3 +1,5 @@
+// program to destowania, czy rzeczy dzialaja
+
 #include <bits/stdc++.h>
 #include "wallet.h"
 using namespace std;
