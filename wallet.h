@@ -7,20 +7,22 @@ class Operation {
 	private:
 		unsigned long long finalBalance;
 
-	public: 
-		Operation(unsigned int finalBalance);
+	public:
+        Operation(unsigned int finalBalance);
 		unsigned long long getUnits();
 	
 };
 
 class Wallet {
 	private: 
-		static const unsigned int UNITS_IN_B = 100000000; 
-		unsigned long long balance;
+		static const unsigned int UNITS_IN_B = 100'000'000;
+		inline static unsigned int B_IN_CIRCULATION = 0;
+		unsigned long long balance = 0;
 		
 		std::vector<Operation> operationsHistory;
 	
 	public:
+        Wallet();
 		Wallet(unsigned long long n);
 		Operation operator[] (int i);
 };
