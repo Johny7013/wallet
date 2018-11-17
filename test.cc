@@ -32,6 +32,20 @@ int main() {
     // check leading zeroes
     Wallet w6("000,78657");
     cout << "Po pierwszej operacji w w6 portfelu bylo " << w6[0].getUnits() << " B" <<  endl;
+
+    // check Wallet( Wallet&& w1, Wallet&& w2)
+    Wallet w7(Wallet(3), Wallet(7));
+    for(int i = 0; i < 3; i++){
+        cout << "Po " << i << "-tej operacji w w7 portfelu bylo " << w7[i].getUnits() << " B" <<  endl;
+    }
+
+    // check Wallet::fromBinary(str)
+    Wallet w8 = Wallet::fromBinary("100000");
+    cout << "Po pierwszej operacji w w8 portfelu bylo " << w8[0].getUnits() << " B" <<  endl;
+
+    // check Operation to date
+    cout << w8[0] <<  endl;
+
 	
 	return 0;
 }

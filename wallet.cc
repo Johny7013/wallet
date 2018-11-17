@@ -3,11 +3,16 @@
 #include <regex>
 #include <stdexcept>
 #include <cstdlib>
+#include <utility>
+#include <iomanip>
+
+using namespace std::rel_ops;
 
 #ifdef NDEBUG
 #define LOG(msg)
 #else
 #include <iostream>
+
 #define LOG(msg) \
     std::cout << "Line: " << __LINE__ << " " << (msg) << std::endl;
 #endif
@@ -57,15 +62,14 @@ unsigned long long convertToUll(const char* str, unsigned long long units){
             R"(([,.]([0-9]{0,8}))?(?:\s*)$)"
             );
 
-    const std::string s(str);
-    std::smatch parsedData;
-    auto regexSuccess = std::regex_match(s, parsedData, regex);
+    std::cmatch parsedData;
+    auto regexSuccess = std::regex_match(str, parsedData, regex);
 
     if(regexSuccess){
-        std::string::size_type sz = 0;
+        std::string::size_type idx = 0;
         // integer part + mantissa
-        return std::stoull(parsedData.str(1), &sz, 10) * units
-                + std::stoull(parsedData.str(3), &sz, 10) * (units / pow10(parsedData.str(3).size()));
+        return std::stoull(parsedData.str(1), &idx, 10) * units
+                + std::stoull(parsedData.str(3), &idx, 10) * (units / pow10(parsedData.str(3).size()));
     }
     else{
         throw std::invalid_argument("Invalid argument passed to Wallet(str) constuctor");
@@ -74,7 +78,7 @@ unsigned long long convertToUll(const char* str, unsigned long long units){
 }
 
 Wallet::Wallet(const char* str) {
-    LOG("str constuctor invoked")
+    LOG("str constructor invoked")
     unsigned long long n = convertToUll(str, UNITS_IN_B);
 
     if(n > B_NOT_IN_CIRCULATION){
@@ -93,15 +97,63 @@ Wallet::Wallet(Wallet &&wallet)
     operationsHistory.push_back(Operation(balance));
 }
 
+bool compareOperations(Operation op1, Operation op2){
+    return op1 < op2;
+}
+
+Wallet::Wallet(Wallet&& w1, Wallet&& w2)
+    : balance(w1.balance + w2.balance)
+    , operationsHistory(std::move(w1.operationsHistory)) {
+    LOG("Wallet( Wallet&& w1, Wallet&& w2) invoked");
+
+    w1.balance = 0;
+    w2.balance = 0;
+
+    for(auto x: w2.operationsHistory){
+        this->operationsHistory.push_back(x);
+    }
+
+    sort(this->operationsHistory.begin(), this->operationsHistory.end(), compareOperations);
+    operationsHistory.push_back(Operation(balance));
+
+    w2.operationsHistory.clear();
+}
+
+Wallet Wallet::fromBinary(const char *str) {
+    std::string::size_type size = strlen(str);
+    std::string::size_type idx = 0;
+
+    unsigned long long x;
+
+    try{
+        x = std::stoull(str, &idx, 2);
+        if(size != idx) {
+            throw std::invalid_argument("");
+        }
+    }catch(...) {
+        throw std::invalid_argument("Invalid argument passed to Wallet::fromBinary(str)");
+    }
+
+    return Wallet(x);
+}
+
 Operation::Operation(unsigned long long finalBalance) {
 	this->finalBalance = finalBalance;
 	this->time = std::time(nullptr);
 }
 
-unsigned long long Operation::getUnits() {
+unsigned long long Operation::getUnits(){
 	return finalBalance;
 }
 
 Operation Wallet::operator[] (int i) {
 	return operationsHistory[i];
+}
+
+std::ostream& operator<< (std::ostream& os, const Operation& op)
+{
+    std::time_t t = std::time(nullptr);
+    std::tm tm = *std::localtime(&t);
+    os << "Wallet balance is " << op.finalBalance << std::put_time(&tm, " B after operation made at day %F");
+    return os;
 }

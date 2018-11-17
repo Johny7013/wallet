@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <ctime>
+#include <iostream>
 
 class Operation {
 	private:
@@ -12,7 +13,10 @@ class Operation {
 	public:
         Operation(unsigned long long finalBalance);
 		unsigned long long getUnits();
-	
+        bool operator==(const Operation& op) const {return this->time == op.time;}
+        bool operator< (const Operation& op) const {return this->time < op.time;}
+        friend std::ostream& operator<< (std::ostream& os, const Operation& op);
+
 };
 
 class Wallet {
@@ -32,6 +36,8 @@ class Wallet {
         // copy assignment explicitly forbidden
 		Wallet& operator= (const Wallet& wallet) = delete;
 		Wallet(Wallet&& wallet);
+		Wallet(Wallet&& w1, Wallet&& w2);
+		static Wallet fromBinary(const char* str);
 		Operation operator[] (int i);
 };
 
