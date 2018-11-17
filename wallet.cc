@@ -38,10 +38,12 @@ Wallet::Wallet(unsigned long long n) {
 	operationsHistory.push_back(Operation(n));
 }
 
-long long pow(long long base, unsigned long exp){
-    long long x = 1;
+
+// It is guaranteed by regex that exp <= 8
+unsigned long long pow10(unsigned long exp){
+    unsigned long long x = 1;
     for(int i = 0; i < exp; i++){
-        x *= base;
+        x *= 10;
     }
     return x;
 }
@@ -63,7 +65,7 @@ unsigned long long convertToUll(const char* str, unsigned long long units){
         std::string::size_type sz = 0;
         // integer part + mantissa
         return std::stoull(parsedData.str(1), &sz, 10) * units
-                + std::stoull(parsedData.str(3), &sz, 10) * (units / pow(10, parsedData.str(3).size()));
+                + std::stoull(parsedData.str(3), &sz, 10) * (units / pow10(parsedData.str(3).size()));
     }
     else{
         throw std::invalid_argument("Invalid argument passed to Wallet(str) constuctor");
@@ -72,6 +74,7 @@ unsigned long long convertToUll(const char* str, unsigned long long units){
 }
 
 Wallet::Wallet(const char* str) {
+    LOG("str constuctor invoked")
     unsigned long long n = convertToUll(str, UNITS_IN_B);
 
     if(n > B_NOT_IN_CIRCULATION){
