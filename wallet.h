@@ -23,6 +23,10 @@ class Wallet {
 		
 		std::vector<Operation> operationsHistory;
 	
+		void updateHistory();
+		void increaseBalance(unsigned long long delta);
+		void decreaseBalance(unsigned long long delta);
+	
 	public:
         Wallet();
 		Wallet(unsigned long long n);
@@ -31,8 +35,32 @@ class Wallet {
 		Wallet(const Wallet& wallet) = delete;
         // copy assignment explicitly forbidden
 		Wallet& operator= (const Wallet& wallet) = delete;
+		// move assignment allowed
+		Wallet& operator= (Wallet&& wallet);
 		Wallet(Wallet&& wallet);
+		
+		Wallet& operator+= (Wallet& wallet);
+		Wallet& operator+= (Wallet&& wallet);
+		Wallet& operator+= (unsigned long long n);
+		Wallet& operator*= (unsigned long long n);
+		Wallet& operator-= (Wallet& wallet);
+		Wallet& operator-= (Wallet&& wallet);
+		Wallet& operator-= (unsigned long long n);
+		
+		const Wallet operator+ (const Wallet& wallet) const;
+		
+		bool operator== (const Wallet& wallet); 
+		bool operator!= (const Wallet& wallet);
+		bool operator< (const Wallet& wallet);
+		bool operator<= (const Wallet& wallet);
+		bool operator> (const Wallet& wallet);
+		bool operator>= (const Wallet& wallet);
+		
 		Operation operator[] (int i);
+		
+		
+		// temporary, delete before submitting 
+		void printHistory();
 };
 
 
