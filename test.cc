@@ -32,6 +32,8 @@ int main() {
     // check leading zeroes
     Wallet w6("000,78657");
     cout << "Po pierwszej operacji w w6 portfelu bylo " << w6[0].getUnits() << " B" <<  endl;
+
+    cout << "jolo" << endl;
 	
 	return 0;
 }

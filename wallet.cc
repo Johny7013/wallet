@@ -12,7 +12,7 @@
     std::cout << "Line: " << __LINE__ << " " << (msg) << std::endl;
 #endif
 
-class OutOfBondsException: public std::exception
+class OutOfBoundsException: public std::exception
 {
 	virtual const char* what() const throw()
 	{
