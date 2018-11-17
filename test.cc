@@ -18,6 +18,9 @@ int main() {
 	// check move constuctor
     Wallet w2 = std::move(Wallet(42));
     cout << "Po pierwszej operacji w portfelu bylo " << w2[0].getUnits() << " B" <<  endl;
+
+    // check excpetion tooManyB
+    Wallet w3(22000000);
 	
 	return 0;
 }
