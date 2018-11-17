@@ -20,7 +20,18 @@ int main() {
     cout << "Po pierwszej operacji w portfelu bylo " << w2[0].getUnits() << " B" <<  endl;
 
     // check excpetion tooManyB
-    Wallet w3(22000000);
+    //Wallet w3(22000000);
+
+    // check Wallet(str)
+    Wallet w4("34,67");
+    cout << "Po pierwszej operacji w portfelu bylo " << w4[0].getUnits() << " B" <<  endl;
+
+    // check invalid_argument exception
+    //Wallet w5("as,78");
+
+    // check leading zeroes
+    Wallet w6("000,78657");
+    cout << "Po pierwszej operacji w portfelu bylo " << w6[0].getUnits() << " B" <<  endl;
 	
 	return 0;
 }

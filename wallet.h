@@ -10,14 +10,14 @@ class Operation {
 		time_t time;
 
 	public:
-        Operation(unsigned int finalBalance);
+        Operation(unsigned long long finalBalance);
 		unsigned long long getUnits();
 	
 };
 
 class Wallet {
 	private: 
-		static const unsigned int UNITS_IN_B = 100'000'000;
+		static const unsigned long long UNITS_IN_B = 100'000'000;
 		inline static unsigned long long B_NOT_IN_CIRCULATION = static_cast<unsigned long long>(21e14);
 		unsigned long long balance = 0;
 		
@@ -26,6 +26,7 @@ class Wallet {
 	public:
         Wallet();
 		Wallet(unsigned long long n);
+		Wallet(const char* str);
 		// copy constructor explicitly forbidden
 		Wallet(const Wallet& wallet) = delete;
         // copy assignment explicitly forbidden
