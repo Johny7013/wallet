@@ -55,8 +55,6 @@ class Wallet {
 		Wallet& operator-= (Wallet&& wallet);
 		Wallet& operator-= (unsigned long long n);
 		
-		const Wallet operator+ (const Wallet& wallet) const;
-		
 		bool operator== (const Wallet& wallet); 
 		bool operator!= (const Wallet& wallet);
 		bool operator< (const Wallet& wallet);
@@ -65,6 +63,8 @@ class Wallet {
 		bool operator>= (const Wallet& wallet);
 		
 		Operation operator[] (int i);
+		
+		
 		
 		
 		// temporary, delete before submitting 
