@@ -76,10 +76,6 @@ int main() {
 	cout << (w10 == w8) << endl;
 	cout << (Wallet(51) <= Wallet(50)) << endl;
 	
-	Wallet w11(3);
-	Wallet w12 = w11 + Wallet(5);
-	
-	w12.printHistory(); 
 	return 0;
 }
 

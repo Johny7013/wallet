@@ -271,11 +271,6 @@ Wallet Wallet::fromBinary(const char *str) {
     return Wallet(x);
 }
 
-
-const Wallet Wallet::operator+ (const Wallet& wallet) const {
-	return *this += wallet;
-}
-
 bool Wallet::operator== (const Wallet& wallet) {
 	return balance == wallet.balance;
 }
