@@ -32,12 +32,28 @@ int main() {
     // check leading zeroes
     Wallet w6("000,78657");
     cout << "Po pierwszej operacji w w6 portfelu bylo " << w6[0].getUnits() << " B" <<  endl;
+
+
+    // check Wallet( Wallet&& w1, Wallet&& w2)
+    Wallet w7(Wallet(3), Wallet(7));
+    for(int i = 0; i < 3; i++){
+        cout << "Po " << i << "-tej operacji w w7 portfelu bylo " << w7[i].getUnits() << " B" <<  endl;
+    }
+
+    // check Wallet::fromBinary(str)
+    Wallet w8 = Wallet::fromBinary("100000");
+    cout << "Po pierwszej operacji w w8 portfelu bylo " << w8[0].getUnits() << " B" <<  endl;
+
+    // check Operation to date
+    cout << w8[0] <<  endl;
+
     
     // check move assignment 
-	Wallet w7(7);
-	w7 = Wallet(10);
+	Wallet ww7(7);
+	ww7 = Wallet(10);
+
 	
-	cout << "Po drugiej operacji w w7 portfelu bylo " << w7[1].getUnits() << " B" << endl;
+	cout << "Po drugiej operacji w w7 portfelu bylo " << ww7[1].getUnits() << " B" << endl;
 	
 	// check operation out of bounds exception
 	//cout << "Po trzeciej operacji w w7 portfelu bylo " << w7[2].getUnits() << " B" << endl;

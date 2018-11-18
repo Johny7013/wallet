@@ -1,4 +1,3 @@
 1. Dodac obsluge czasu do operacji (jakos)
 2. Zrobic cala reszte... xD
-3. Wypisywanie czasu da się zgrabnie zbrobić przez localtime i put_time
-4. Chyba należy jakoś zgrabniej poprawić typy w funkcji pow.
+4. Wallet::fromBinary(str) nie akceptuje biłych znaków
