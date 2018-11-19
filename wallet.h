@@ -5,17 +5,18 @@
 #include <ctime>
 #include <iostream>
 
+using namespace std::rel_ops;
+
 class Operation {
 	private:
 		unsigned long long finalBalance;
 		time_t time;
-
+		
 	public:
         Operation(unsigned long long finalBalance);
 		unsigned long long getUnits();
         bool operator==(const Operation& op) const {return this->time == op.time;}
         bool operator< (const Operation& op) const {return this->time < op.time;}
-        bool operator<= (const Operation& op) const {return this->time <= op.time;}
         friend std::ostream& operator<< (std::ostream& os, const Operation& op);
 
 };
@@ -33,6 +34,7 @@ class Wallet {
 		void decreaseBalance(unsigned long long delta);
 	
 	public:
+		~Wallet();
         Wallet();
 		Wallet(int n);
 		Wallet(const char* str);
@@ -61,11 +63,12 @@ class Wallet {
 		Wallet& operator+= (Wallet& wallet);
 		Wallet& operator+= (Wallet&& wallet);
 		Wallet& operator+= (unsigned long long n);
-		Wallet&& operator*= (int n);
+
 		Wallet& operator-= (Wallet& wallet);
 		Wallet& operator-= (Wallet&& wallet);
 		Wallet& operator-= (unsigned long long n);
 		
+		Wallet& operator*= (int n);
 
 		friend bool operator== (const Wallet& wallet, const Wallet& wallet2); 
 		friend bool operator< (const Wallet& wallet, const Wallet& wallet2);
@@ -74,16 +77,17 @@ class Wallet {
 		friend bool operator>= (const Wallet& wallet, const Wallet& wallet2);
 		friend bool operator!= (const Wallet& wallet, const Wallet& wallet2);
 
-		
 		Operation operator[] (int i) const;
 		
 		unsigned long long getUnits() const;
 		size_t opSize() const;
+		
+		friend std::ostream& operator<< (std::ostream& os, const Wallet& op);
 		 
 		// temporary, delete before submitting 
 		void printHistory();
 };
 
-const Wallet Empty();
+const Wallet& Empty();
 
 #endif // _WALLET_H_
