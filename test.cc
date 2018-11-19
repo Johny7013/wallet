@@ -41,11 +41,11 @@ int main() {
     }
 
     // check Wallet::fromBinary(str)
-    Wallet w8 = Wallet::fromBinary("100000");
-    cout << "Po pierwszej operacji w w8 portfelu bylo " << w8[0].getUnits() << " B" <<  endl;
+    Wallet ww8 = Wallet::fromBinary("100000");
+    cout << "Po pierwszej operacji w w8 portfelu bylo " << ww8[0].getUnits() << " B" <<  endl;
 
     // check Operation to date
-    cout << w8[0] <<  endl;
+    cout << ww8[0] <<  endl;
 
     
     // check move assignment 
@@ -76,10 +76,6 @@ int main() {
 	cout << (w10 == w8) << endl;
 	cout << (Wallet(51) <= Wallet(50)) << endl;
 	
-	Wallet w11(3);
-	Wallet w12 = w11 + Wallet(5);
-	
-	w12.printHistory(); 
 	return 0;
 }
 
