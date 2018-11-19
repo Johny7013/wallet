@@ -1,3 +1,3 @@
-1. Dodac obsluge czasu do operacji (jakos)
-2. Zrobic cala reszte... xD
-4. Wallet::fromBinary(str) nie akceptuje biłych znaków
+1. Operatory Wallet += int  i Wallet *= int trzeba napisac tak, zeby nie tworzyly nowego obiektu (on moze przepelnic pule kasy)
+2. Pousuwac syfy z kodu
+3. Dodac zabronienie konwersji  
