@@ -66,12 +66,14 @@ class Wallet {
 		Wallet& operator-= (Wallet&& wallet);
 		Wallet& operator-= (unsigned long long n);
 		
+
 		friend bool operator== (const Wallet& wallet, const Wallet& wallet2); 
 		friend bool operator< (const Wallet& wallet, const Wallet& wallet2);
 		friend bool operator<= (const Wallet& wallet, const Wallet& wallet2);
 		friend bool operator> (const Wallet& wallet, const Wallet& wallet2);
 		friend bool operator>= (const Wallet& wallet, const Wallet& wallet2);
 		friend bool operator!= (const Wallet& wallet, const Wallet& wallet2);
+
 		
 		Operation operator[] (int i) const;
 		

@@ -359,6 +359,7 @@ Wallet Wallet::fromBinary(const char *str) {
     return Wallet(x);
 }
 
+
 bool operator== (const Wallet& wallet, const Wallet& wallet2) {
 	return wallet.balance == wallet2.balance;
 }
