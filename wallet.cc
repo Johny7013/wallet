@@ -71,7 +71,7 @@ Wallet::Wallet() {
 	operationsHistory.push_back(Operation(0));
 }
 
-Wallet::Wallet(unsigned long long n) {
+Wallet::Wallet(int n) {
     LOG("n constructor invoked");
 	n *= UNITS_IN_B;
 
@@ -220,16 +220,104 @@ Wallet& Wallet::operator-= (unsigned long long n) {
 	return *this;
 }
 
-Wallet& Wallet::operator*= (unsigned long long n) {
+Wallet&& Wallet::operator*= (int n) {
 	LOG("Operator *= (int) invoked");
 	
 	// is n = 0 possible? If yes, we are in trouble
 	increaseBalance(balance * (n - 1));
 	updateHistory();
 	
-	return *this;
+	return std::move(*this);
 }
 
+Wallet operator* (Wallet& wallet, unsigned long long n) {
+	LOG("Operator * invoked");
+	
+	Wallet result = Wallet(std::move(wallet));
+	result.increaseBalance(result.balance * (n - 1));
+	result.updateHistory();
+	
+	return result;
+}
+
+Wallet operator* (Wallet&& wallet, unsigned long long n) {
+	LOG("Operator * invoked");
+	
+	Wallet result = Wallet(std::move(wallet));
+	result.increaseBalance(result.balance * (n - 1));
+	result.updateHistory();
+	
+	return result;
+}
+
+Wallet operator* (unsigned long long n, Wallet& wallet) {
+	LOG("Operator * invoked");
+	
+	Wallet result = Wallet(std::move(wallet));
+	result.increaseBalance(result.balance * (n - 1));
+	result.updateHistory();
+	
+	return result;
+}
+
+Wallet operator* (unsigned long long n, Wallet&& wallet) {
+	LOG("Operator * invoked");
+	
+	Wallet result = Wallet(std::move(wallet));
+	result.increaseBalance(result.balance * (n - 1));
+	result.updateHistory();
+	
+	return result;
+}
+
+Wallet operator+ (Wallet&& wallet, Wallet& wallet2) {
+	Wallet result = Wallet(std::move(wallet));
+	result.increaseBalance(wallet2.balance);
+	result.updateHistory();
+	wallet2.decreaseBalance(wallet2.balance);
+	wallet2.updateHistory();
+	
+	return result;
+}
+
+Wallet operator+ (Wallet&& wallet, Wallet&& wallet2) {
+	Wallet result = Wallet(std::move(wallet));
+	result.increaseBalance(wallet2.balance);
+	result.updateHistory();
+	
+	return result;
+}
+
+Wallet operator- (Wallet&& wallet, Wallet& wallet2) {
+	Wallet result = Wallet(std::move(wallet));
+	result.decreaseBalance(wallet2.balance);
+	result.updateHistory();
+	wallet2.increaseBalance(wallet2.balance);
+	wallet2.updateHistory();
+	
+	return result;
+}
+
+Wallet operator- (Wallet&& wallet, Wallet&& wallet2) {
+	Wallet result = Wallet(std::move(wallet));
+	result.decreaseBalance(wallet2.balance);
+	result.updateHistory();
+	
+	return result;
+}
+
+unsigned long long Wallet::getUnits() const {
+	return balance;
+}
+
+size_t Wallet::opSize() const {
+	return operationsHistory.size();
+}
+
+const Wallet Empty() {
+	unsigned long long initialBalance = 0;
+	return Wallet(initialBalance);
+}
 
 bool compareOperations(Operation op1, Operation op2){
     return op1 < op2;
@@ -271,28 +359,29 @@ Wallet Wallet::fromBinary(const char *str) {
     return Wallet(x);
 }
 
-bool Wallet::operator== (const Wallet& wallet) {
-	return balance == wallet.balance;
+
+bool operator== (const Wallet& wallet, const Wallet& wallet2) {
+	return wallet.balance == wallet2.balance;
 }
 
-bool Wallet::operator!= (const Wallet& wallet) {
-	return balance != wallet.balance;
+bool operator< (const Wallet& wallet, const Wallet& wallet2) {
+	return wallet.balance < wallet2.balance;
 }
 
-bool Wallet::operator< (const Wallet& wallet) {
-	return balance < wallet.balance;
+bool operator<= (const Wallet& wallet, const Wallet& wallet2) {
+	return wallet.balance <= wallet2.balance;
 }
 
-bool Wallet::operator<= (const Wallet& wallet) {
-	return balance <= wallet.balance;
+bool operator> (const Wallet& wallet, const Wallet& wallet2) {
+	return wallet.balance > wallet2.balance;
 }
 
-bool Wallet::operator>= (const Wallet& wallet) {
-	return balance >= wallet.balance;
+bool operator>= (const Wallet& wallet, const Wallet& wallet2) {
+	return wallet.balance >= wallet2.balance;
 }
 
-bool Wallet::operator> (const Wallet& wallet) {
-	return balance > wallet.balance;
+bool operator!= (const Wallet& wallet, const Wallet& wallet2) {
+	return wallet.balance != wallet2.balance;
 } 
 
 
@@ -301,11 +390,11 @@ Operation::Operation(unsigned long long finalBalance) {
 	this->time = std::time(nullptr);
 }
 
-unsigned long long Operation::getUnits(){
+unsigned long long Operation::getUnits() {
 	return finalBalance;
 }
 
-Operation Wallet::operator[] (int i) {
+Operation Wallet::operator[] (int i) const {
 	if (i >= operationsHistory.size()) {
 		throw invalidOperationIndex;
 	} 

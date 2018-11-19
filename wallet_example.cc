@@ -45,6 +45,7 @@ int main() {
 
     Wallet w5{2};
     Wallet w6 = Wallet(10) - w5;
+    
     assert(w5 == Wallet(4));
     assert(w6 == Wallet(8));
 }

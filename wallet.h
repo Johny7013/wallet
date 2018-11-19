@@ -15,6 +15,7 @@ class Operation {
 		unsigned long long getUnits();
         bool operator==(const Operation& op) const {return this->time == op.time;}
         bool operator< (const Operation& op) const {return this->time < op.time;}
+        bool operator<= (const Operation& op) const {return this->time <= op.time;}
         friend std::ostream& operator<< (std::ostream& os, const Operation& op);
 
 };
@@ -33,7 +34,7 @@ class Wallet {
 	
 	public:
         Wallet();
-		Wallet(unsigned long long n);
+		Wallet(int n);
 		Wallet(const char* str);
 		// copy constructor explicitly forbidden
 		Wallet(const Wallet& wallet) = delete;
@@ -46,30 +47,43 @@ class Wallet {
 		Wallet(Wallet&& w1, Wallet&& w2);
 		static Wallet fromBinary(const char* str);
 
+		friend Wallet operator* (Wallet& wallet, unsigned long long n);
+		friend Wallet operator* (Wallet&& wallet, unsigned long long n);
+		friend Wallet operator* (unsigned long long n, Wallet& wallet);
+		friend Wallet operator* (unsigned long long n, Wallet&& wallet);
+		
+		friend Wallet operator+ (Wallet&& wallet, Wallet& wallet2);
+		friend Wallet operator+ (Wallet&& wallet, Wallet&& wallet2);
+		
+		friend Wallet operator- (Wallet&& wallet, Wallet& wallet2);
+		friend Wallet operator- (Wallet&& wallet, Wallet&& wallet2);
 		
 		Wallet& operator+= (Wallet& wallet);
 		Wallet& operator+= (Wallet&& wallet);
 		Wallet& operator+= (unsigned long long n);
-		Wallet& operator*= (unsigned long long n);
+		Wallet&& operator*= (int n);
 		Wallet& operator-= (Wallet& wallet);
 		Wallet& operator-= (Wallet&& wallet);
 		Wallet& operator-= (unsigned long long n);
 		
-		bool operator== (const Wallet& wallet); 
-		bool operator!= (const Wallet& wallet);
-		bool operator< (const Wallet& wallet);
-		bool operator<= (const Wallet& wallet);
-		bool operator> (const Wallet& wallet);
-		bool operator>= (const Wallet& wallet);
+
+		friend bool operator== (const Wallet& wallet, const Wallet& wallet2); 
+		friend bool operator< (const Wallet& wallet, const Wallet& wallet2);
+		friend bool operator<= (const Wallet& wallet, const Wallet& wallet2);
+		friend bool operator> (const Wallet& wallet, const Wallet& wallet2);
+		friend bool operator>= (const Wallet& wallet, const Wallet& wallet2);
+		friend bool operator!= (const Wallet& wallet, const Wallet& wallet2);
+
 		
-		Operation operator[] (int i);
+		Operation operator[] (int i) const;
 		
-		
+		unsigned long long getUnits() const;
+		size_t opSize() const;
+		 
 		// temporary, delete before submitting 
 		void printHistory();
 };
 
-
-
+const Wallet Empty();
 
 #endif // _WALLET_H_
