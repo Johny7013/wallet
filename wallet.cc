@@ -65,20 +65,54 @@ namespace {
 		std::smatch parsedData;
         auto regexSuccess = std::regex_match(str, parsedData, regex);
 
-        if(regexSuccess){
-            std::string::size_type idx = 0;
-            // res = integer part + mantissa
-            unsigned long long res = std::stoull(parsedData.str(1), &idx, 10) * units;
+        try{
+            if(regexSuccess){
+                std::string::size_type idx = 0;
+                // res = integer part + mantissa
+                unsigned long long res = std::stoull(parsedData.str(1), &idx, 10) * units;
 
-            if(parsedData.str(3).size() != 0){
-                res += std::stoull(parsedData.str(3), &idx, 10) * (units / pow10(parsedData.str(3).size()));
+                if(parsedData.str(3).size() != 0){
+                    res += std::stoull(parsedData.str(3), &idx, 10) * (units / pow10(parsedData.str(3).size()));
+                }
+
+                return res;
             }
-
-            return res;
-        }
-        else{
+            else{
+                throw std::invalid_argument("");
+            }
+        } catch (...){
             throw std::invalid_argument("Invalid argument passed to Wallet(str) constuctor");
         }
+
+
+	}
+
+	unsigned long long convertBinToUll(const std::string &str){
+	    static const std::regex regexBin(
+	            R"(^([0-1]{1,})$)"
+	            );
+
+        std::smatch parsedData;
+        auto regexSuccess = std::regex_match(str, parsedData, regexBin);
+
+        unsigned long long x;
+
+        try{
+            if(regexSuccess){
+                std::string::size_type idx = 0;
+                x = std::stoull(parsedData.str(0), &idx, 2);
+            }
+            else{
+                throw std::invalid_argument("");
+            }
+        } catch (...){
+            throw std::invalid_argument("Invalid argument passed to Wallet::fromBinary(str)");
+        }
+
+
+        cout << "FromBinary: " << parsedData.str(0) << " " << x << endl;
+
+        return x;
 	}
 }
 
@@ -166,19 +200,7 @@ Wallet::Wallet(Wallet&& w1, Wallet&& w2)
 
 
 Wallet Wallet::fromBinary(const std::string &str) {
-    std::string::size_type size = str.size();
-    std::string::size_type idx = 0;
-
-    unsigned long long x;
-
-    try{
-        x = std::stoull(str, &idx, 2);
-        if(size != idx) {
-            throw std::invalid_argument("");
-        }
-    }catch(...) {
-        throw std::invalid_argument("Invalid argument passed to Wallet::fromBinary(str)");
-    }
+    unsigned long long x = convertBinToUll(str);
 
     return Wallet(x);
 }
