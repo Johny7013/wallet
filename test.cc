@@ -9,6 +9,10 @@ static const uint UNITS_IN_B = 100000000;
 using std::move;
 
 int main() {
+
+    //Wallet wer((double)3);
+    //cout << "Po pierwszej operacji w w0 portfelu bylo " << wer[0].getUnits() << " B" <<  endl;
+
 	Wallet w0;
 	cout << "Po pierwszej operacji w w0 portfelu bylo " << w0[0].getUnits() << " B" <<  endl;
 	Wallet w(4);

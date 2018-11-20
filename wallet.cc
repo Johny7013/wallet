@@ -89,6 +89,10 @@ Wallet::Wallet(int n) {
 	updateHistory();
 }
 
+Wallet::Wallet(unsigned int n) :Wallet((int) n){}
+Wallet::Wallet(long long n) :Wallet((int) n){}
+Wallet::Wallet(unsigned long long n) :Wallet((int) n){}
+
 
 bool compareOperations(Operation op1, Operation op2) {
     return op1 < op2;
@@ -177,6 +181,8 @@ Wallet::Wallet(const std::string &str) {
 	updateHistory();
 }
 
+Wallet::Wallet(const char* str) :Wallet(std::string(str)){}
+
 Wallet::Wallet(Wallet &&wallet)
     : balance(wallet.balance)
     , operationsHistory(std::move(wallet.operationsHistory)) {
@@ -213,7 +219,7 @@ Wallet& Wallet::operator+= (Wallet&& wallet) {
 
 Wallet& Wallet::operator+= (unsigned long long n) {
 	LOG("Operator += invoked");
-	return *this += Wallet(n) ;
+	return *this += Wallet(n);
 }
 
 Wallet operator+ (Wallet&& wallet, Wallet& wallet2) {

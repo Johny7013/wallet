@@ -38,7 +38,11 @@ class Wallet {
 		~Wallet();
         Wallet();
 		Wallet(int n);
+        Wallet(unsigned int n);
+        Wallet(long long n);
+        Wallet(unsigned long long n);
 		Wallet(const std::string &str);
+        Wallet(const char* str);
 		// copy constructor explicitly forbidden
 		Wallet(const Wallet& wallet) = delete;
         // copy assignment explicitly forbidden
@@ -87,8 +91,12 @@ class Wallet {
 
 		// temporary, delete before submitting 
 		void printHistory();
+
+        template<typename T> Wallet(T arg) = delete;
 };
 
 const Wallet& Empty();
+
+
 
 #endif // _WALLET_H_
