@@ -87,6 +87,7 @@ class Wallet {
 
 		friend std::ostream& operator<< (std::ostream& os, const Wallet& op);
 
+
 		// preventing implicit conversions
         template<typename T> Wallet(T arg) = delete;
         
@@ -96,6 +97,7 @@ class Wallet {
 		template<typename T> friend Wallet operator* (T, Wallet&&) = delete;
 		
 		template<typename T> Wallet& operator*= (T) = delete;
+
 };
 
 const Wallet& Empty();
