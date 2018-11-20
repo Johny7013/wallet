@@ -370,7 +370,7 @@ bool operator!= (const Wallet& wallet, const Wallet& wallet2) {
 
 Operation::Operation(unsigned long long finalBalance) {
 	this->finalBalance = finalBalance;
-	this->time = std::chrono::system_clock::now();
+	this->time = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
 }
 
 unsigned long long Operation::getUnits() {
