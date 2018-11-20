@@ -87,7 +87,7 @@ int main() {
 	
 	w8 += 3;
 	w8 -= 3;
-	w8.printHistory();
+
 	
 	Wallet w10(51);
 	
@@ -100,10 +100,7 @@ int main() {
 	Wallet vw5 = Wallet(1) * 42;
 	Wallet vw6 = 42 * Wallet(2);
 	//Wallet vw7 = Wallet(3) *= 42;
-    vw3.printHistory();
-    vw4.printHistory();
-    vw5.printHistory();
-    vw6.printHistory();
+
     //vw7.printHistory();
 	
 	
@@ -118,10 +115,8 @@ int main() {
     //Wallet suma3 = ww1 + suma2;  // błąd kompilacji
     Wallet suma4 = Wallet(1) + Wallet(2);  // OK, suma4 ma dwa wpisy
                                            // w historii i 3 B
-                        
-    suma2.printHistory();
-    suma4.printHistory();
-    ww2.printHistory();  
+
+    //ww2.printHistory();  
     
     Wallet a = Wallet(8);
     cout << a << endl;
@@ -236,9 +231,9 @@ int main() {
     assert(xw2 == xw3);
 
     assert(Wallet::fromBinary("100") == Wallet(4));
-    //std::string str(" 1.2000 ");
+    std::string str(" 1.2000 ");
     assert(Wallet(" 1.2000 ") == Wallet("1,2"));
-    //assert(Wallet(str) == Wallet("1,2"));
+    assert(Wallet(str) == Wallet("1,2"));
      //Wallet("1.a"); // exception
 
     assert(Wallet(2) + xw2 == Wallet(3));
@@ -285,6 +280,10 @@ int main() {
     //fb = fw2 < "10.0" ;
     //Wallet h(1.23);
 	//Wallet xx = "10.0" + Wallet(1);
+	
+	Wallet sum = Wallet(10) - Wallet(2);
+	std::cout << sum.opSize() << std::endl;
+	std::cout << Wallet(Wallet(1)).opSize() << std::endl;
 	return 0;
 }
 

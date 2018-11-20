@@ -8,18 +8,6 @@
 
 #include "wallet.h"
 
-#ifdef NDEBUG
-#define LOG(msg)
-#else
-#include <iostream>
-
-using namespace std;
-
-#define LOG(msg) \
-    std::cout << "Line: " << __LINE__ << " " << (msg) << std::endl;
-#endif
-
-
 namespace {
 
 	class TooManyBException: public std::exception
@@ -68,7 +56,6 @@ namespace {
         try{
             if(regexSuccess){
                 std::string::size_type idx = 0;
-                // res = integer part + mantissa
                 unsigned long long res = std::stoull(parsedData.str(1), &idx, 10) * units;
 
                 if(parsedData.str(3).size() != 0){
@@ -83,8 +70,6 @@ namespace {
         } catch (...){
             throw std::invalid_argument("Invalid argument passed to Wallet(str) constuctor");
         }
-
-
 	}
 
 	unsigned long long convertBinToUll(const std::string &str){
@@ -108,9 +93,6 @@ namespace {
         } catch (...){
             throw std::invalid_argument("Invalid argument passed to Wallet::fromBinary(str)");
         }
-
-
-        cout << "FromBinary: " << parsedData.str(0) << " " << x << endl;
 
         return x;
 	}
@@ -139,23 +121,22 @@ void Wallet::updateHistory() {
 }
 
 Wallet::~Wallet() {
-	//LOG("Destructor invoked");
 	B_NOT_IN_CIRCULATION += this->balance;
 }
 
 Wallet::Wallet() {
-    LOG("Default constructor invoked");
 	operationsHistory.push_back(Operation(0));
 }
 
-Wallet::Wallet(int n) :Wallet((long long) n){}
-Wallet::Wallet(unsigned int n) :Wallet((unsigned long long) n) {}
+Wallet::Wallet(int n) : Wallet((long long) n){}
+
+Wallet::Wallet(unsigned int n) : Wallet((unsigned long long) n) {}
 
 Wallet::Wallet(long long n) {
-    LOG("n constructor invoked");
     if (n < 0) {
         throw tooLittleB;
     }
+    
     unsigned long long initialBalance = n;
     initialBalance *= UNITS_IN_B;
 
@@ -168,7 +149,6 @@ Wallet::Wallet(long long n) {
 }
 
 Wallet::Wallet(unsigned long long n) {
-    LOG("n constructor invoked");
     unsigned long long initialBalance = n;
     initialBalance *= UNITS_IN_B;
 
@@ -182,7 +162,6 @@ Wallet::Wallet(unsigned long long n) {
 
 Wallet::Wallet(Wallet&& w1, Wallet&& w2)
         : balance(w1.balance + w2.balance) {
-    LOG("Wallet( Wallet&& w1, Wallet&& w2) invoked");
 
     std::vector<Operation> w;
     w.reserve(w1.opSize() + w2.opSize() + 1);
@@ -198,42 +177,29 @@ Wallet::Wallet(Wallet&& w1, Wallet&& w2)
     operationsHistory.push_back(Operation(balance));
 }
 
-
 Wallet Wallet::fromBinary(const std::string &str) {
     unsigned long long x = convertBinToUll(str);
 
     return Wallet(x);
 }
 
-void Wallet::printHistory() {
-	cout << endl;
-	for (int i = 0; i < (int)operationsHistory.size(); i++) {
-		cout << "After operation " << i << "   balance = " << operationsHistory[i].getUnits() << endl;
-	}
-	cout << endl;
-}
-
 Wallet::Wallet(const std::string &str) {
-    LOG("str constructor invoked")
     unsigned long long initialBalance = convertToUll(str, UNITS_IN_B);
 
 	increaseBalance(initialBalance);
 	updateHistory();
 }
 
-Wallet::Wallet(const char* str) : Wallet(std::string(str)) {
-	LOG("no siema");
-}
+Wallet::Wallet(const char* str) : Wallet(std::string(str)) {}
 
 Wallet::Wallet(Wallet &&wallet)
     : balance(wallet.balance)
     , operationsHistory(std::move(wallet.operationsHistory)) {
-    LOG("Move constructor invoked");
+		
     updateHistory();
 }
 
 Wallet& Wallet::operator= (Wallet&& wallet) {
-	LOG("Move assignment invoked");
 	if (this == &wallet) return *this;
 
 	balance = wallet.balance;
@@ -244,7 +210,6 @@ Wallet& Wallet::operator= (Wallet&& wallet) {
 }
 
 Wallet& Wallet::operator+= (Wallet& wallet) {
-	LOG("Operator += invoked");
 	increaseBalance(wallet.balance);
 	wallet.decreaseBalance(wallet.balance);
 	
@@ -255,7 +220,6 @@ Wallet& Wallet::operator+= (Wallet& wallet) {
 }
 
 Wallet& Wallet::operator+= (Wallet&& wallet) {
-	LOG("Operator += invoked");
 	return *this += wallet;
 }
 
@@ -273,7 +237,6 @@ Wallet operator+ (Wallet&& wallet, Wallet&& wallet2) {
 }
 
 Wallet& Wallet::operator-= (Wallet& wallet) {
-	LOG("Operator -= invoked");
 	decreaseBalance(wallet.balance);
 	wallet.increaseBalance(wallet.balance);
 	
@@ -284,7 +247,6 @@ Wallet& Wallet::operator-= (Wallet& wallet) {
 }
 
 Wallet& Wallet::operator-= (Wallet&& wallet) {
-	LOG("Operator -= invoked");
 	return *this -= wallet;
 }
 
@@ -295,12 +257,13 @@ Wallet operator- (Wallet&& wallet, Wallet& wallet2) {
 }
 
 Wallet operator- (Wallet&& wallet, Wallet&& wallet2) {
-	return std::move(wallet) - wallet2;
+	Wallet result = std::move(wallet);
+	result.decreaseBalance(wallet2.balance);
+	
+	return result;
 }
 
 Wallet& Wallet::operator*= (int n) {
-	LOG("Operator *= (int) invoked");
-	
 	if (n == 0) decreaseBalance(balance);
 	else increaseBalance(balance * (n - 1));
 
@@ -310,24 +273,20 @@ Wallet& Wallet::operator*= (int n) {
 }
 
 Wallet operator* (Wallet& wallet, int n) {
-	LOG("Operator * invoked");
 	Wallet result = Wallet(std::move(wallet));
 	result *= n;
 	return result;
 }
 
 Wallet operator* (Wallet&& wallet, int n) {
-	LOG("Operator * invoked");
 	return wallet * n;
 }
 
 Wallet operator* (int n, Wallet& wallet) {
-	LOG("Operator * invoked");
 	return wallet * n;
 }
 
 Wallet operator* (int n, Wallet&& wallet) {
-	LOG("Operator * invoked");
 	return wallet * n;
 }
 
@@ -386,7 +345,7 @@ Operation Wallet::operator[] (int i) const {
 
 std::ostream& operator<< (std::ostream& os, const Operation& op)
 {
-    time_t t = chrono::system_clock::to_time_t(op.time);
+    time_t t = std::chrono::system_clock::to_time_t(op.time);
     std::tm tm = *std::localtime(&t);
     os << "Wallet balance is " << op.finalBalance << std::put_time(&tm, " B after operation made at day %F");
     return os;
