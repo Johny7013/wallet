@@ -47,7 +47,7 @@ namespace {
 	// It is guaranteed by regex that exp <= 8
 	unsigned long long pow10(unsigned long exp){
 		unsigned long long x = 1;
-		for(int i = 0; i < exp; i++){
+		for(unsigned long i = 0; i < exp; i++){
 			x *= 10;
 		}
 		return x;
@@ -378,7 +378,7 @@ unsigned long long Operation::getUnits() {
 }
 
 Operation Wallet::operator[] (int i) const {
-	if (i >= operationsHistory.size()) {
+	if ((size_t)i >= operationsHistory.size()) {
 		throw invalidOperationIndex;
 	} 
 	return operationsHistory[i];
