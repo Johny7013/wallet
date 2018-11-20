@@ -31,7 +31,7 @@ namespace {
 			return "Operation index out of bounds";
 		}
 	} invalidOperationIndex;
-	
+
 	// It is guaranteed by regex that exp <= 8
 	unsigned long long pow10(unsigned long exp){
 		unsigned long long x = 1;
@@ -56,6 +56,7 @@ namespace {
         try{
             if(regexSuccess){
                 std::string::size_type idx = 0;
+                // res = integer part + mantissa
                 unsigned long long res = std::stoull(parsedData.str(1), &idx, 10) * units;
 
                 if(parsedData.str(3).size() != 0){
@@ -136,7 +137,7 @@ Wallet::Wallet(long long n) {
     if (n < 0) {
         throw tooLittleB;
     }
-    
+
     unsigned long long initialBalance = n;
     initialBalance *= UNITS_IN_B;
 
@@ -195,7 +196,7 @@ Wallet::Wallet(const char* str) : Wallet(std::string(str)) {}
 Wallet::Wallet(Wallet &&wallet)
     : balance(wallet.balance)
     , operationsHistory(std::move(wallet.operationsHistory)) {
-		
+
     updateHistory();
 }
 
@@ -259,7 +260,7 @@ Wallet operator- (Wallet&& wallet, Wallet& wallet2) {
 Wallet operator- (Wallet&& wallet, Wallet&& wallet2) {
 	Wallet result = std::move(wallet);
 	result.decreaseBalance(wallet2.balance);
-	
+
 	return result;
 }
 
