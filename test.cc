@@ -34,12 +34,12 @@ int main() {
     //Wallet w5("as,78");
 
     // check leading zeroes
-    Wallet w6("000,78657");
+    Wallet w6("  000,78657      ");
     cout << "Po pierwszej operacji w w6 portfelu bylo " << w6[0].getUnits() << " B" <<  endl;
 
 
     // check Wallet( Wallet&& w1, Wallet&& w2)
-    Wallet w7(Wallet(3), Wallet(7));
+    Wallet w7(std::move(w4), Wallet(7));
     for(int i = 0; i < 3; i++){
         cout << "Po " << i << "-tej operacji w w7 portfelu bylo " << w7[i].getUnits() << " B" <<  endl;
     }

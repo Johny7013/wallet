@@ -17,7 +17,7 @@ using namespace std;
     std::cout << "Line: " << __LINE__ << " " << (msg) << std::endl;
 #endif
 
-bool compareOperations(Operation op1, Operation op2);
+
 
 class TooManyBException: public std::exception
 {
@@ -84,14 +84,19 @@ Wallet::Wallet(int n) {
 	if (initialBalance > B_NOT_IN_CIRCULATION){
 		throw tooManyB;
 	}
-	
+
 	increaseBalance(initialBalance);
 	updateHistory();
 }
 
+
+bool compareOperations(Operation op1, Operation op2) {
+    return op1 < op2;
+}
+
 Wallet::Wallet(Wallet&& w1, Wallet&& w2)
     : balance(w1.balance + w2.balance)
-    , operationsHistory(std::move(w1.operationsHistory)) {
+    , operationsHistory(std::move(w1.operationsHistory)){
     LOG("Wallet( Wallet&& w1, Wallet&& w2) invoked");
 
     w1.balance = 0;
@@ -103,12 +108,10 @@ Wallet::Wallet(Wallet&& w1, Wallet&& w2)
 
     sort(this->operationsHistory.begin(), this->operationsHistory.end(), compareOperations);
     operationsHistory.push_back(Operation(balance));
-
-    w2.operationsHistory.clear();
 }
 
-Wallet Wallet::fromBinary(const char *str) {
-    std::string::size_type size = strlen(str);
+Wallet Wallet::fromBinary(const std::string &str) {
+    std::string::size_type size = str.size();
     std::string::size_type idx = 0;
 
     unsigned long long x;
@@ -142,7 +145,7 @@ unsigned long long pow10(unsigned long exp){
     return x;
 }
 
-unsigned long long convertToUll(const char* str, unsigned long long units){
+unsigned long long convertToUll(const std::string &str, unsigned long long units){
     static const std::regex regex(
             // integer part
             R"(^(?:\s*)(0*[1-9]?[0-9]{0,7}))"
@@ -151,7 +154,7 @@ unsigned long long convertToUll(const char* str, unsigned long long units){
             R"(([,.]([0-9]{0,8}))?(?:\s*)$)"
             );
 
-    std::cmatch parsedData;
+    std::smatch parsedData;
     auto regexSuccess = std::regex_match(str, parsedData, regex);
 
     if(regexSuccess){
@@ -166,7 +169,7 @@ unsigned long long convertToUll(const char* str, unsigned long long units){
 
 }
 
-Wallet::Wallet(const char* str) {
+Wallet::Wallet(const std::string &str) {
     LOG("str constructor invoked")
     unsigned long long initialBalance = convertToUll(str, UNITS_IN_B);
 
@@ -184,7 +187,7 @@ Wallet::Wallet(Wallet &&wallet)
 Wallet& Wallet::operator= (Wallet&& wallet) {
 	LOG("Move assignment invoked");
 	if (this == &wallet) return *this;
-	
+
 	balance = wallet.balance;
 	operationsHistory = std::move(wallet.operationsHistory);
 	updateHistory();
@@ -216,7 +219,7 @@ Wallet& Wallet::operator+= (unsigned long long n) {
 Wallet operator+ (Wallet&& wallet, Wallet& wallet2) {
 	Wallet result = Wallet(std::move(wallet));
 	result += wallet2;
-	return result;	
+	return result;
 }
 
 Wallet operator+ (Wallet&& wallet, Wallet&& wallet2) {
@@ -250,7 +253,7 @@ Wallet& Wallet::operator-= (unsigned long long n) {
 Wallet operator- (Wallet&& wallet, Wallet& wallet2) {
 	Wallet result = Wallet(std::move(wallet));
 	result -= wallet2;
-	return result;	
+	return result;
 }
 
 Wallet operator- (Wallet&& wallet, Wallet&& wallet2) {
@@ -262,7 +265,7 @@ Wallet& Wallet::operator*= (int n) {
 	
 	if (n == 0) decreaseBalance(balance);
 	else increaseBalance(balance * (n - 1));
-	
+
 	updateHistory();
 	
 	return *this;
@@ -271,7 +274,7 @@ Wallet& Wallet::operator*= (int n) {
 Wallet operator* (Wallet& wallet, unsigned long long n) {
 	LOG("Operator * invoked");
 	Wallet result = Wallet(std::move(wallet));
-	result *= n; 
+	result *= n;
 	return result;
 }
 
@@ -286,7 +289,7 @@ Wallet operator* (unsigned long long n, Wallet& wallet) {
 }
 
 Wallet operator* (unsigned long long n, Wallet&& wallet) {
-	LOG("Operator * invoked");	
+	LOG("Operator * invoked");
 	return wallet * n;
 }
 
@@ -301,10 +304,6 @@ size_t Wallet::opSize() const {
 const Wallet& Empty() {
 	static const Wallet wallet;
 	return wallet;
-}
-
-bool compareOperations(Operation op1, Operation op2) {
-    return op1 < op2;
 }
 
 bool operator== (const Wallet& wallet, const Wallet& wallet2) {
@@ -333,7 +332,7 @@ bool operator!= (const Wallet& wallet, const Wallet& wallet2) {
 
 Operation::Operation(unsigned long long finalBalance) {
 	this->finalBalance = finalBalance;
-	this->time = std::time(nullptr);
+	this->time = std::chrono::system_clock::now();
 }
 
 unsigned long long Operation::getUnits() {
@@ -349,7 +348,7 @@ Operation Wallet::operator[] (int i) const {
 
 std::ostream& operator<< (std::ostream& os, const Operation& op)
 {
-    std::time_t t = std::time(nullptr);
+    time_t t = chrono::system_clock::to_time_t(op.time);
     std::tm tm = *std::localtime(&t);
     os << "Wallet balance is " << op.finalBalance << std::put_time(&tm, " B after operation made at day %F");
     return os;
@@ -359,13 +358,13 @@ std::ostream& operator<< (std::ostream& os, const Wallet& wallet)
 {
 	unsigned long long integerPart = wallet.balance / wallet.UNITS_IN_B;
 	unsigned long long decimalPart = wallet.balance % wallet.UNITS_IN_B;
-	
+
     os << "Wallet[" << integerPart;
     if (decimalPart) {
 		while (decimalPart % 10 == 0) decimalPart /= 10;
 		os << "," << decimalPart;
     }
     os << " B]";
-    
+
     return os;
 }

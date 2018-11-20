@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <ctime>
+#include <chrono>
 #include <iostream>
 
 using namespace std::rel_ops;
@@ -10,8 +11,8 @@ using namespace std::rel_ops;
 class Operation {
 	private:
 		unsigned long long finalBalance;
-		time_t time;
-		
+		std::chrono::time_point<std::chrono::system_clock> time;
+
 	public:
         Operation(unsigned long long finalBalance);
 		unsigned long long getUnits();
@@ -37,7 +38,7 @@ class Wallet {
 		~Wallet();
         Wallet();
 		Wallet(int n);
-		Wallet(const char* str);
+		Wallet(const std::string &str);
 		// copy constructor explicitly forbidden
 		Wallet(const Wallet& wallet) = delete;
         // copy assignment explicitly forbidden
@@ -47,7 +48,7 @@ class Wallet {
 		Wallet(Wallet&& wallet);
 
 		Wallet(Wallet&& w1, Wallet&& w2);
-		static Wallet fromBinary(const char* str);
+		static Wallet fromBinary(const std::string &str);
 
 		friend Wallet operator* (Wallet& wallet, unsigned long long n);
 		friend Wallet operator* (Wallet&& wallet, unsigned long long n);
@@ -81,9 +82,9 @@ class Wallet {
 		
 		unsigned long long getUnits() const;
 		size_t opSize() const;
-		
+
 		friend std::ostream& operator<< (std::ostream& os, const Wallet& op);
-		 
+
 		// temporary, delete before submitting 
 		void printHistory();
 };
