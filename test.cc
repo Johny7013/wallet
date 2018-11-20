@@ -59,6 +59,8 @@ int main() {
     // check Wallet::fromBinary(str)
     Wallet ww8 = Wallet::fromBinary("100000");
     cout << "Po pierwszej operacji w w8 portfelu bylo " << ww8[0].getUnits() << " B" <<  endl;
+    Wallet ww6 = Wallet::fromBinary("1010");
+    cout << "Po pierwszej operacji w w8 portfelu bylo " << ww8[0].getUnits() << " B" <<  endl;
 
     // check Operation to date
     cout << ww8[0] <<  endl;
