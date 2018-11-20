@@ -15,7 +15,7 @@ class Operation {
 
 	public:
         Operation(unsigned long long finalBalance);
-		unsigned long long getUnits();
+		unsigned long long getUnits() const;
         bool operator==(const Operation& op) const {return this->time == op.time;}
         bool operator< (const Operation& op) const {return this->time < op.time;}
         friend std::ostream& operator<< (std::ostream& os, const Operation& op);
@@ -80,7 +80,7 @@ class Wallet {
 		friend bool operator>= (const Wallet& wallet, const Wallet& wallet2);
 		friend bool operator!= (const Wallet& wallet, const Wallet& wallet2);
 
-		Operation operator[] (int i) const;
+		const Operation operator[] (int i) const;
 
 		unsigned long long getUnits() const;
 		size_t opSize() const;
