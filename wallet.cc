@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <utility>
 #include <iomanip>
+#include <iterator>
 
 #include "wallet.h"
 
@@ -62,26 +63,25 @@ namespace {
 				);
 
 		std::smatch parsedData;
-    auto regexSuccess = std::regex_match(str, parsedData, regex);
+        auto regexSuccess = std::regex_match(str, parsedData, regex);
 
-    if(regexSuccess){
-        std::string::size_type idx = 0;
-        // res = integer part + mantissa
-        unsigned long long res = std::stoull(parsedData.str(1), &idx, 10) * units;
+        if(regexSuccess){
+            std::string::size_type idx = 0;
+            // res = integer part + mantissa
+            unsigned long long res = std::stoull(parsedData.str(1), &idx, 10) * units;
 
-        if(parsedData.str(3).size() != 0){
-            res += std::stoull(parsedData.str(3), &idx, 10) * (units / pow10(parsedData.str(3).size()));
+            if(parsedData.str(3).size() != 0){
+                res += std::stoull(parsedData.str(3), &idx, 10) * (units / pow10(parsedData.str(3).size()));
+            }
+
+            return res;
         }
-
-        return res;
-    }
-    else{
-        throw std::invalid_argument("Invalid argument passed to Wallet(str) constuctor");
-    }
-
+        else{
+            throw std::invalid_argument("Invalid argument passed to Wallet(str) constuctor");
+        }
 	}
-
 }
+
 void Wallet::increaseBalance(unsigned long long delta) {
 	if (delta > B_NOT_IN_CIRCULATION) {
 		throw tooManyB;
@@ -114,46 +114,56 @@ Wallet::Wallet() {
 	operationsHistory.push_back(Operation(0));
 }
 
-Wallet::Wallet(int n) {
+Wallet::Wallet(int n) :Wallet((long long) n){}
+Wallet::Wallet(unsigned int n) :Wallet((unsigned long long) n) {}
+
+Wallet::Wallet(long long n) {
     LOG("n constructor invoked");
     if (n < 0) {
-		throw tooLittleB;
-	}
-	unsigned long long initialBalance = n;
-	initialBalance *= UNITS_IN_B;
+        throw tooLittleB;
+    }
+    unsigned long long initialBalance = n;
+    initialBalance *= UNITS_IN_B;
 
-	if (initialBalance > B_NOT_IN_CIRCULATION){
-		throw tooManyB;
-	}
+    if (initialBalance > B_NOT_IN_CIRCULATION){
+        throw tooManyB;
+    }
 
-	increaseBalance(initialBalance);
-	updateHistory();
+    increaseBalance(initialBalance);
+    updateHistory();
 }
 
-Wallet::Wallet(unsigned int n) : Wallet((int) n) {}
-Wallet::Wallet(long long n) : Wallet((int) n) {}
-Wallet::Wallet(unsigned long long n) : Wallet((int) n) {}
+Wallet::Wallet(unsigned long long n) {
+    LOG("n constructor invoked");
+    unsigned long long initialBalance = n;
+    initialBalance *= UNITS_IN_B;
 
+    if (initialBalance > B_NOT_IN_CIRCULATION){
+        throw tooManyB;
+    }
 
-bool compareOperations(Operation op1, Operation op2) {
-    return op1 < op2;
+    increaseBalance(initialBalance);
+    updateHistory();
 }
 
 Wallet::Wallet(Wallet&& w1, Wallet&& w2)
-    : balance(w1.balance + w2.balance)
-    , operationsHistory(std::move(w1.operationsHistory)){
+        : balance(w1.balance + w2.balance) {
     LOG("Wallet( Wallet&& w1, Wallet&& w2) invoked");
+
+    std::vector<Operation> w;
+    w.reserve(w1.opSize() + w2.opSize() + 1);
+
+    std::merge(w1.operationsHistory.begin(), w1.operationsHistory.end(),
+               w2.operationsHistory.begin(), w2.operationsHistory.end(),
+               std::back_inserter(w));
 
     w1.balance = 0;
     w2.balance = 0;
 
-    for(auto x: w2.operationsHistory){
-        this->operationsHistory.push_back(x);
-    }
-
-    sort(this->operationsHistory.begin(), this->operationsHistory.end(), compareOperations);
+    this->operationsHistory = w;
     operationsHistory.push_back(Operation(balance));
 }
+
 
 Wallet Wallet::fromBinary(const std::string &str) {
     std::string::size_type size = str.size();

@@ -13,6 +13,11 @@ int main() {
     //Wallet wer((double)3);
     //cout << "Po pierwszej operacji w w0 portfelu bylo " << wer[0].getUnits() << " B" <<  endl;
 
+    Wallet er("123");
+    Wallet ert(0);
+    cout << "Po pierwszej operacji w w0 portfelu bylo " << ert[0].getUnits() << " B" <<  endl;
+
+
 	Wallet w0;
 	cout << "Po pierwszej operacji w w0 portfelu bylo " << w0[0].getUnits() << " B" <<  endl;
 	Wallet w(4);
@@ -41,10 +46,13 @@ int main() {
     Wallet w6("  000,78657      ");
     cout << "Po pierwszej operacji w w6 portfelu bylo " << w6[0].getUnits() << " B" <<  endl;
 
+    w6 += 2;
+    w4 += 3;
+    w6 += 1;
 
     // check Wallet( Wallet&& w1, Wallet&& w2)
-    Wallet w7(std::move(w4), Wallet(7));
-    for(int i = 0; i < 3; i++){
+    Wallet w7(std::move(w4), std::move(w6));
+    for(int i = 0; i < 6; i++){
         cout << "Po " << i << "-tej operacji w w7 portfelu bylo " << w7[i].getUnits() << " B" <<  endl;
     }
 
@@ -269,7 +277,7 @@ int main() {
     //Wallet fw3(true);
     //Wallet fw4('a');
     //Wallet fw5(ff);
-    fw1 += "10.0";
+    //fw1 += "10.0";
     //Wallet lel("123");
     //fw1 = Wallet(1) + "10.0";
     //fb = fw2 < "10.0" ;
