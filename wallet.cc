@@ -337,7 +337,7 @@ unsigned long long Operation::getUnits() const {
 	return finalBalance;
 }
 
-Operation Wallet::operator[] (int i) const {
+const Operation Wallet::operator[] (int i) const {
 	if ((size_t)i >= operationsHistory.size()) {
 		throw invalidOperationIndex;
 	} 
