@@ -62,17 +62,22 @@ namespace {
 				);
 
 		std::smatch parsedData;
-		auto regexSuccess = std::regex_match(str, parsedData, regex);
+    auto regexSuccess = std::regex_match(str, parsedData, regex);
 
-		if(regexSuccess){
-			std::string::size_type idx = 0;
-			// integer part + mantissa
-			return std::stoull(parsedData.str(1), &idx, 10) * units
-					+ std::stoull(parsedData.str(3), &idx, 10) * (units / pow10(parsedData.str(3).size()));
-		}
-		else{
-			throw std::invalid_argument("Invalid argument passed to Wallet(str) constuctor");
-		}
+    if(regexSuccess){
+        std::string::size_type idx = 0;
+        // res = integer part + mantissa
+        unsigned long long res = std::stoull(parsedData.str(1), &idx, 10) * units;
+
+        if(parsedData.str(3).size() != 0){
+            res += std::stoull(parsedData.str(3), &idx, 10) * (units / pow10(parsedData.str(3).size()));
+        }
+
+        return res;
+    }
+    else{
+        throw std::invalid_argument("Invalid argument passed to Wallet(str) constuctor");
+    }
 
 	}
 
@@ -175,8 +180,6 @@ void Wallet::printHistory() {
 	}
 	cout << endl;
 }
-
-
 
 Wallet::Wallet(const std::string &str) {
     LOG("str constructor invoked")
