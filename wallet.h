@@ -41,8 +41,8 @@ class Wallet {
         Wallet(unsigned int n);
         Wallet(long long n);
         Wallet(unsigned long long n);
-		Wallet(const std::string &str);
-        Wallet(const char* str);
+		explicit Wallet(const std::string &str);
+        explicit Wallet(const char* str);
 		// copy constructor explicitly forbidden
 		Wallet(const Wallet& wallet) = delete;
         // copy assignment explicitly forbidden
@@ -61,20 +61,15 @@ class Wallet {
 		
 		friend Wallet operator+ (Wallet&& wallet, Wallet& wallet2);
 		friend Wallet operator+ (Wallet&& wallet, Wallet&& wallet2);
-
-		
 		
 		friend Wallet operator- (Wallet&& wallet, Wallet& wallet2);
 		friend Wallet operator- (Wallet&& wallet, Wallet&& wallet2);
 
-
 		Wallet& operator+= (Wallet& wallet);
 		Wallet& operator+= (Wallet&& wallet);
-
 				
 		Wallet& operator-= (Wallet& wallet);
 		Wallet& operator-= (Wallet&& wallet);
-
 		
 		Wallet& operator*= (int n);
 
@@ -86,7 +81,7 @@ class Wallet {
 		friend bool operator!= (const Wallet& wallet, const Wallet& wallet2);
 
 		Operation operator[] (int i) const;
-		
+
 		unsigned long long getUnits() const;
 		size_t opSize() const;
 
@@ -99,10 +94,8 @@ class Wallet {
         
         //Wallet operator+= (const char *) = delete;
         //Wallet operator-= (const char *) = delete;
-        friend Wallet operator+ (Wallet&&, const char *) = delete;
-        friend Wallet operator- (Wallet&&, const char *) = delete;
-        
-		
+        //friend Wallet operator+ (Wallet&&, const char *) = delete;
+        //friend Wallet operator- (Wallet&&, const char *) = delete;
 
 };
 
