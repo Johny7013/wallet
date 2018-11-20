@@ -332,11 +332,11 @@ Operation::Operation(unsigned long long finalBalance) {
 	this->time = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
 }
 
-unsigned long long Operation::getUnits() {
+unsigned long long Operation::getUnits() const {
 	return finalBalance;
 }
 
-Operation Wallet::operator[] (int i) const {
+const Operation Wallet::operator[] (int i) const {
 	if (i >= operationsHistory.size()) {
 		throw invalidOperationIndex;
 	} 

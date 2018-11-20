@@ -284,6 +284,14 @@ int main() {
 	Wallet sum = Wallet(10) - Wallet(2);
 	std::cout << sum.opSize() << std::endl;
 	std::cout << Wallet(Wallet(1)).opSize() << std::endl;
+	
+	Wallet t(3);
+	//t[0] = std::move(s[0]);
+	
+	t += Wallet(1);
+	cout << t[1] << endl;
+	
+	//Empty() += Wallet(1);
 	return 0;
 }
 
