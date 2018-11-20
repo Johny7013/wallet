@@ -39,6 +39,8 @@ class Wallet {
         Wallet();
 		Wallet(int n);
         Wallet(unsigned int n);
+        Wallet(long long n);
+        Wallet(unsigned long long n);
 		Wallet(const std::string &str);
         Wallet(const char* str);
 		// copy constructor explicitly forbidden
