@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <utility>
 #include <iomanip>
+#include <iterator>
 
 #include "wallet.h"
 
@@ -145,26 +146,24 @@ Wallet::Wallet(unsigned long long n) {
     updateHistory();
 }
 
-
-bool compareOperations(Operation op1, Operation op2) {
-    return op1 < op2;
-}
-
 Wallet::Wallet(Wallet&& w1, Wallet&& w2)
-    : balance(w1.balance + w2.balance)
-    , operationsHistory(std::move(w1.operationsHistory)){
+        : balance(w1.balance + w2.balance) {
     LOG("Wallet( Wallet&& w1, Wallet&& w2) invoked");
+
+    std::vector<Operation> w;
+    w.reserve(w1.opSize() + w2.opSize() + 1);
+
+    std::merge(w1.operationsHistory.begin(), w1.operationsHistory.end(),
+               w2.operationsHistory.begin(), w2.operationsHistory.end(),
+               std::back_inserter(w));
 
     w1.balance = 0;
     w2.balance = 0;
 
-    for(auto x: w2.operationsHistory){
-        this->operationsHistory.push_back(x);
-    }
-
-    sort(this->operationsHistory.begin(), this->operationsHistory.end(), compareOperations);
+    this->operationsHistory = w;
     operationsHistory.push_back(Operation(balance));
 }
+
 
 Wallet Wallet::fromBinary(const std::string &str) {
     std::string::size_type size = str.size();

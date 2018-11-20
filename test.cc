@@ -46,10 +46,13 @@ int main() {
     Wallet w6("  000,78657      ");
     cout << "Po pierwszej operacji w w6 portfelu bylo " << w6[0].getUnits() << " B" <<  endl;
 
+    w6 += 2;
+    w4 += 3;
+    w6 += 1;
 
     // check Wallet( Wallet&& w1, Wallet&& w2)
-    Wallet w7(std::move(w4), Wallet(7));
-    for(int i = 0; i < 3; i++){
+    Wallet w7(std::move(w4), std::move(w6));
+    for(int i = 0; i < 6; i++){
         cout << "Po " << i << "-tej operacji w w7 portfelu bylo " << w7[i].getUnits() << " B" <<  endl;
     }
 

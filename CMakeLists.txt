@@ -3,4 +3,4 @@ project(testKlasy)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(wallet wallet_example.cc wallet.cc wallet.h)
+add_executable(wallet test.cc wallet.cc wallet.h)
