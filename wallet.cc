@@ -1,10 +1,11 @@
-#include "wallet.h"
 #include <exception>
 #include <regex>
 #include <stdexcept>
 #include <cstdlib>
 #include <utility>
 #include <iomanip>
+
+#include "wallet.h"
 
 #ifdef NDEBUG
 #define LOG(msg)
@@ -18,29 +19,64 @@ using namespace std;
 #endif
 
 
+namespace {
 
-class TooManyBException: public std::exception
-{
-	virtual const char* what() const throw()
+	class TooManyBException: public std::exception
 	{
-		return "BajtekCoins upper limit exceeded (21e6 B)";
-	}
-} tooManyB;
+		virtual const char* what() const throw()
+		{
+			return "BajtekCoins upper limit exceeded (21e6 B)";
+		}
+	} tooManyB;
 
-class TooLittleBException: public std::exception
-{
-	virtual const char* what() const throw()
+	class TooLittleBException: public std::exception
 	{
-		return "BajtekCoins lower limit exceeded (0 B)";
-	}
-} tooLittleB;
+		virtual const char* what() const throw()
+		{
+			return "BajtekCoins lower limit exceeded (0 B)";
+		}
+	} tooLittleB;
 
-class OperationIndexOutOfBoundsException: public std::exception {
-	virtual const char* what() const throw() {
-		return "Operation index out of bounds";
+	class OperationIndexOutOfBoundsException: public std::exception {
+		virtual const char* what() const throw() {
+			return "Operation index out of bounds";
+		}
+	} invalidOperationIndex;
+	
+	// It is guaranteed by regex that exp <= 8
+	unsigned long long pow10(unsigned long exp){
+		unsigned long long x = 1;
+		for(int i = 0; i < exp; i++){
+			x *= 10;
+		}
+		return x;
 	}
-} invalidOperationIndex;
 
+	unsigned long long convertToUll(const std::string &str, unsigned long long units){
+		static const std::regex regex(
+				// integer part
+				R"(^(?:\s*)(0*[1-9]?[0-9]{0,7}))"
+
+				// mantissa
+				R"(([,.]([0-9]{0,8}))?(?:\s*)$)"
+				);
+
+		std::smatch parsedData;
+		auto regexSuccess = std::regex_match(str, parsedData, regex);
+
+		if(regexSuccess){
+			std::string::size_type idx = 0;
+			// integer part + mantissa
+			return std::stoull(parsedData.str(1), &idx, 10) * units
+					+ std::stoull(parsedData.str(3), &idx, 10) * (units / pow10(parsedData.str(3).size()));
+		}
+		else{
+			throw std::invalid_argument("Invalid argument passed to Wallet(str) constuctor");
+		}
+
+	}
+
+}
 void Wallet::increaseBalance(unsigned long long delta) {
 	if (delta > B_NOT_IN_CIRCULATION) {
 		throw tooManyB;
@@ -64,7 +100,7 @@ void Wallet::updateHistory() {
 }
 
 Wallet::~Wallet() {
-	LOG("Destructor invoked");
+	//LOG("Destructor invoked");
 	B_NOT_IN_CIRCULATION += this->balance;
 }
 
@@ -89,9 +125,9 @@ Wallet::Wallet(int n) {
 	updateHistory();
 }
 
-Wallet::Wallet(unsigned int n) :Wallet((int) n){}
-Wallet::Wallet(long long n) :Wallet((int) n){}
-Wallet::Wallet(unsigned long long n) :Wallet((int) n){}
+Wallet::Wallet(unsigned int n) : Wallet((int) n) {}
+Wallet::Wallet(long long n) : Wallet((int) n) {}
+Wallet::Wallet(unsigned long long n) : Wallet((int) n) {}
 
 
 bool compareOperations(Operation op1, Operation op2) {
@@ -140,38 +176,7 @@ void Wallet::printHistory() {
 	cout << endl;
 }
 
-// It is guaranteed by regex that exp <= 8
-unsigned long long pow10(unsigned long exp){
-    unsigned long long x = 1;
-    for(int i = 0; i < exp; i++){
-        x *= 10;
-    }
-    return x;
-}
 
-unsigned long long convertToUll(const std::string &str, unsigned long long units){
-    static const std::regex regex(
-            // integer part
-            R"(^(?:\s*)(0*[1-9]?[0-9]{0,7}))"
-
-            // mantissa
-            R"(([,.]([0-9]{0,8}))?(?:\s*)$)"
-            );
-
-    std::smatch parsedData;
-    auto regexSuccess = std::regex_match(str, parsedData, regex);
-
-    if(regexSuccess){
-        std::string::size_type idx = 0;
-        // integer part + mantissa
-        return std::stoull(parsedData.str(1), &idx, 10) * units
-                + std::stoull(parsedData.str(3), &idx, 10) * (units / pow10(parsedData.str(3).size()));
-    }
-    else{
-        throw std::invalid_argument("Invalid argument passed to Wallet(str) constuctor");
-    }
-
-}
 
 Wallet::Wallet(const std::string &str) {
     LOG("str constructor invoked")
@@ -181,7 +186,9 @@ Wallet::Wallet(const std::string &str) {
 	updateHistory();
 }
 
-Wallet::Wallet(const char* str) :Wallet(std::string(str)){}
+Wallet::Wallet(const char* str) : Wallet(std::string(str)) {
+	LOG("no siema");
+}
 
 Wallet::Wallet(Wallet &&wallet)
     : balance(wallet.balance)
@@ -217,11 +224,6 @@ Wallet& Wallet::operator+= (Wallet&& wallet) {
 	return *this += wallet;
 }
 
-Wallet& Wallet::operator+= (unsigned long long n) {
-	LOG("Operator += invoked");
-	return *this += Wallet(n);
-}
-
 Wallet operator+ (Wallet&& wallet, Wallet& wallet2) {
 	Wallet result = Wallet(std::move(wallet));
 	result += wallet2;
@@ -251,11 +253,6 @@ Wallet& Wallet::operator-= (Wallet&& wallet) {
 	return *this -= wallet;
 }
 
-Wallet& Wallet::operator-= (unsigned long long n) {
-	LOG("Operator -= invoked");
-	return *this -= Wallet(n) ;
-}
-
 Wallet operator- (Wallet&& wallet, Wallet& wallet2) {
 	Wallet result = Wallet(std::move(wallet));
 	result -= wallet2;
@@ -263,7 +260,7 @@ Wallet operator- (Wallet&& wallet, Wallet& wallet2) {
 }
 
 Wallet operator- (Wallet&& wallet, Wallet&& wallet2) {
-	return std::move(wallet) + wallet2;
+	return std::move(wallet) - wallet2;
 }
 
 Wallet& Wallet::operator*= (int n) {
@@ -277,24 +274,24 @@ Wallet& Wallet::operator*= (int n) {
 	return *this;
 }
 
-Wallet operator* (Wallet& wallet, unsigned long long n) {
+Wallet operator* (Wallet& wallet, int n) {
 	LOG("Operator * invoked");
 	Wallet result = Wallet(std::move(wallet));
 	result *= n;
 	return result;
 }
 
-Wallet operator* (Wallet&& wallet, unsigned long long n) {
+Wallet operator* (Wallet&& wallet, int n) {
 	LOG("Operator * invoked");
 	return wallet * n;
 }
 
-Wallet operator* (unsigned long long n, Wallet& wallet) {
+Wallet operator* (int n, Wallet& wallet) {
 	LOG("Operator * invoked");
 	return wallet * n;
 }
 
-Wallet operator* (unsigned long long n, Wallet&& wallet) {
+Wallet operator* (int n, Wallet&& wallet) {
 	LOG("Operator * invoked");
 	return wallet * n;
 }
