@@ -53,25 +53,28 @@ class Wallet {
 
 		Wallet(Wallet&& w1, Wallet&& w2);
 		static Wallet fromBinary(const std::string &str);
-
-		friend Wallet operator* (Wallet& wallet, unsigned long long n);
-		friend Wallet operator* (Wallet&& wallet, unsigned long long n);
-		friend Wallet operator* (unsigned long long n, Wallet& wallet);
-		friend Wallet operator* (unsigned long long n, Wallet&& wallet);
+		
+		friend Wallet operator* (Wallet& wallet, int n);
+		friend Wallet operator* (Wallet&& wallet, int n);
+		friend Wallet operator* (int n, Wallet& wallet);
+		friend Wallet operator* (int n, Wallet&& wallet);
 		
 		friend Wallet operator+ (Wallet&& wallet, Wallet& wallet2);
 		friend Wallet operator+ (Wallet&& wallet, Wallet&& wallet2);
+
+		
 		
 		friend Wallet operator- (Wallet&& wallet, Wallet& wallet2);
 		friend Wallet operator- (Wallet&& wallet, Wallet&& wallet2);
-		
+
+
 		Wallet& operator+= (Wallet& wallet);
 		Wallet& operator+= (Wallet&& wallet);
-		Wallet& operator+= (unsigned long long n);
 
+				
 		Wallet& operator-= (Wallet& wallet);
 		Wallet& operator-= (Wallet&& wallet);
-		Wallet& operator-= (unsigned long long n);
+
 		
 		Wallet& operator*= (int n);
 
@@ -93,6 +96,14 @@ class Wallet {
 		void printHistory();
 
         template<typename T> Wallet(T arg) = delete;
+        
+        //Wallet operator+= (const char *) = delete;
+        //Wallet operator-= (const char *) = delete;
+        friend Wallet operator+ (Wallet&&, const char *) = delete;
+        friend Wallet operator- (Wallet&&, const char *) = delete;
+        
+		
+
 };
 
 const Wallet& Empty();

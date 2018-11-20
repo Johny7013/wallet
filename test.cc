@@ -214,7 +214,7 @@ int main() {
     assert(Empty()[0].getUnits() == 0);
     //Empty() += Wallet(1); // błąd kompilacji
 
-    Wallet xw1;
+    Wallet xw1; 
     assert(xw1 == Empty());
     assert(xw1.opSize() == 1);
 
@@ -256,7 +256,25 @@ int main() {
     Wallet xw7 = Wallet(10) - xw5;
     assert(xw5 == Wallet(4));
     assert(xw7 == Wallet(8));
-	
+    
+    Wallet fw1, fw2;
+    bool fb;
+    float ff;
+    
+    fw1 += Wallet(3);
+    fw1 *= 3;
+    fb = 2 < fw2;
+    Wallet fsuma2 = 2 + fw2;
+    
+    //Wallet fw3(true);
+    //Wallet fw4('a');
+    //Wallet fw5(ff);
+    fw1 += "10.0";
+    //Wallet lel("123");
+    //fw1 = Wallet(1) + "10.0";
+    //fb = fw2 < "10.0" ;
+    //Wallet h(1.23);
+	//Wallet xx = "10.0" + Wallet(1);
 	return 0;
 }
 
