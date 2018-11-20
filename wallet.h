@@ -87,16 +87,15 @@ class Wallet {
 
 		friend std::ostream& operator<< (std::ostream& os, const Wallet& op);
 
-		// temporary, delete before submitting 
-		void printHistory();
-
+		// preventing implicit conversions
         template<typename T> Wallet(T arg) = delete;
         
-        //Wallet operator+= (const char *) = delete;
-        //Wallet operator-= (const char *) = delete;
-        //friend Wallet operator+ (Wallet&&, const char *) = delete;
-        //friend Wallet operator- (Wallet&&, const char *) = delete;
-
+		template<typename T> friend Wallet operator* (Wallet&, T) = delete;
+		template<typename T> friend Wallet operator* (T, Wallet&) = delete;	
+		template<typename T> friend Wallet operator* (Wallet&&, T) = delete;
+		template<typename T> friend Wallet operator* (T, Wallet&&) = delete;
+		
+		template<typename T> Wallet& operator*= (T) = delete;
 };
 
 const Wallet& Empty();

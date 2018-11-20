@@ -281,7 +281,7 @@ int main() {
     //Wallet h(1.23);
 	//Wallet xx = "10.0" + Wallet(1);
 	
-	Wallet sum = Wallet(10) - Wallet(2);
+	Wallet sum = 1 + Wallet(10);
 	std::cout << sum.opSize() << std::endl;
 	std::cout << Wallet(Wallet(1)).opSize() << std::endl;
 	
@@ -292,6 +292,10 @@ int main() {
 	cout << t[1] << endl;
 	
 	//Empty() += Wallet(1);
+	
+	Wallet g = Wallet(1);
+	g *= 2;
+	
 	return 0;
 }
 
